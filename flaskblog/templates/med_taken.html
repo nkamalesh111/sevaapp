@@ -1,0 +1,23 @@
+{% extends "layout.html" %} {% block content %}
+<div class="content-section">
+  <form method="POST" action="">
+    {{ form.hidden_tag() }}
+    <fieldset class="form-group">
+      <legend class="border-bottom mb-4">
+        Did you take medicine today !!!
+      </legend>
+      <div class="form-group">
+        {% for option in form.med_taken %}
+        <tr>
+          <td>{{ option }}</td>
+          <td>{{ option.label }}</td>
+        </tr>
+        {% endfor %}
+      </div>
+    </fieldset>
+    <div class="form-group">
+      {{ form.submit(class="btn btn-outline-info") }}
+    </div>
+  </form>
+</div>
+{% endblock content %}

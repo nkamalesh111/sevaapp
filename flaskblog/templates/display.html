@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block content %}
+{% for i in n %}
+{% if ((loop.first) and (title=='New-Notification')) %}
+<a class="nav-item nav-link" style="color:red;"
+  href="{{url_for('details',id=i.user_id,date=i.date1,time=i.time1)}}">{{i.user_id}}
+</a>
+{% else %}
+<a class="nav-item nav-link" href="{{url_for('details',id=i.user_id,date=i.date1,time=i.time1)}}">{{i.user_id}} </a>
+{% endif %}
+{% endfor %}
+{% endblock content %}
