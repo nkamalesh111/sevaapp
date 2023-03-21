@@ -13,4 +13,4 @@ login_manager = LoginManager(app)
 login_manager.login_view = "home"
 login_manager.login_message_category = "info"
 socketio = SocketIO(app)
-from flaskblog import routes
+from sevaapp import routes

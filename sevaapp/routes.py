@@ -1,12 +1,12 @@
 from flask import render_template, url_for, flash, redirect, request
-from flaskblog import app, db, bcrypt, socketio
-from flaskblog.forms import (
+from sevaapp import app, db, bcrypt, socketio
+from sevaapp.forms import (
     RegistrationForm,
     LoginForm,
     MonitoringForm,
     MedicineTakenForm,
 )
-from flaskblog.models import User, Notification
+from sevaapp.models import User, Notification
 from flask_login import login_user, current_user, logout_user, login_required
 from datetime import datetime
 
