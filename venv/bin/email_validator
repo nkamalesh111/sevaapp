@@ -1,6 +1,4 @@
-#!/bin/sh
-'''exec' "/home/debasis/Desktop/sem2/mini proj/sevaapp/venv/bin/python3" "$0" "$@"
-' '''
+#!/home/kamalesh/flask_app/sevaapp/venv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys
