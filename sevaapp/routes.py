@@ -9,24 +9,25 @@ from sevaapp.forms import (
 from sevaapp.models import User, Notification
 from flask_login import login_user, current_user, logout_user, login_required
 from datetime import datetime
-
-
+# FOR SIGN IN AND SIGN UP
+####################################################################
+# Creates a table in databease
 @app.before_first_request
 def create_tables():
     db.create_all()
 
-
+# Home page
 @app.route("/")
 @app.route("/home")
 def home():
     return render_template("home.html", title="Home")
 
-
+# About page store about project's information
 @app.route("/about")
 def about():
     return render_template("about.html", title="About")
 
-
+# Route to registraion of a user or volunteer
 @app.route("/register/<role>", methods=["GET", "POST"])
 def register(role):
     if current_user.is_authenticated:
@@ -52,7 +53,7 @@ def register(role):
         return redirect(url_for("login", role=role))
     return render_template("register.html", title=role + " Register", form=form)
 
-
+# Login route where onn the basis of role of a person the system authenticates as user or volunteer
 @app.route("/login/<role>", methods=["GET", "POST"])
 def login(role):
     if current_user.is_authenticated:
@@ -69,21 +70,21 @@ def login(role):
             flash("Login Unsuccessful. Please check email and password", "danger")
     return render_template("login.html", title=role + " Login", form=form)
 
-
+# Logout from the user or volunteer account
 @app.route("/logout")
 @login_required
 def logout():
     logout_user()
     return redirect(url_for("home"))
 
-
+# A person can see his/ her personal details here
 @app.route("/account")
 @login_required
 def account():
-    # image_file = url_for("static", filename=f"profile_pics/{current_user.image_file}")
     return render_template("account.html", title="Account")
 
-
+# FOR COMMUNICATION BETWEEN USER AND VOLUNTEERS
+#######################################################################################
 @socketio.on("logged_in")
 def handle_logged_in_event(data):
     if data["url"] == url_for("tmp"):
@@ -163,7 +164,9 @@ def ack(usr_id, date, time):
         + User.query.filter_by(id=n.volunteer_id).first().username,
     )
 
-
+# FOR ADHERENCE MONITORING
+#############################################################################################
+# This function enables a volunteer to monitor a user
 @app.route("/monitor", methods=["GET", "POST"])
 @login_required
 def monitor():
@@ -183,8 +186,23 @@ def monitor():
         title="Monitoring",
         form=form,
     )
+# It will print alert if user has not submitted the form for 3 or more days
+def patient_status():
+    user = User.query.filter_by(monitoring_applied='Yes').all()
+    date1, date2 = 0, 0
+    for i in user:
+        today = str(datetime.now().date())
+        print(type(today))
+
+        date1 = datetime.strptime(i.date, "%Y-%m-%d")
+        date2 = datetime.strptime(today, "%Y-%m-%d")
+        difference = relativedelta.relativedelta(date2, date1)
+        if (i.counter + difference.days) >= 3:
+            flash(f'{i.username} has skipped the medication', 'danger')
+    return redirect(url_for('home'))
 
 
+# This function will store the user's choice of taking medicine or not 
 @app.route("/med_taken", methods=["GET", "POST"])
 @login_required
 def med_taken():

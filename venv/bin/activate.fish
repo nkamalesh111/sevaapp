@@ -30,7 +30,7 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV "/home/kamalesh/flask_app/sevaapp/venv"
+set -gx VIRTUAL_ENV "/home/debasis/Desktop/sem2/mini proj/sevaapp/venv"
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/bin" $PATH
