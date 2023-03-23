@@ -1,16 +1,30 @@
 <!DOCTYPE html>
 <html>
-
   <head>
     <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+      crossorigin="anonymous"
+    />
 
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='css/main.css') }}"
+    />
+    <script
+      type="text/javascript"
+      src="{{ url_for('static', filename='script/script.js') }}"
+    ></script>
 
     {% if title %}
     <title>Seva App - {{ title }}</title>
@@ -24,65 +38,114 @@
       <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
         <div class="container">
           <a class="navbar-brand mr-4" href="/">Seva App</a>
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle"
-            aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-toggle="collapse"
+            data-target="#navbarToggle"
+            aria-controls="navbarToggle"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
             <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="navbarToggle">
             <div class="navbar-nav mr-auto">
               <a class="nav-item nav-link" href="{{ url_for('home') }}">Home</a>
-              <a class="nav-item nav-link" href="{{ url_for('about') }}">About</a>
+              <a class="nav-item nav-link" href="{{ url_for('about') }}"
+                >About</a
+              >
             </div>
             <!-- Navbar Right Side -->
             <div class="navbar-nav">
               <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.0/socket.io.js"></script>
               {% if current_user.is_authenticated %}
-              <a class="nav-item nav-link" href="{{ url_for('account') }}">Account</a>
-              <a class="nav-item nav-link" href="{{ url_for('logout') }}">Logout</a>
+              <a class="nav-item nav-link" href="{{ url_for('account') }}"
+                >Account</a
+              >
+              <a class="nav-item nav-link" href="{{ url_for('logout') }}"
+                >Logout</a
+              >
               {% if current_user.role=='User' %}
               <a class="nav-item nav-link" href="{{ url_for('tmp') }}">TMP</a>
-              <a class="nav-item nav-link" href="{{ url_for('med_taken') }}">Medcine_Taken</a>
+              <a class="nav-item nav-link" href="{{ url_for('med_taken') }}"
+                >Medcine_Taken</a
+              >
               {% else %}
-              <a class="nav-item nav-link" href="{{ url_for('monitor') }}">Monitoring</a>
-              <a class="nav-item nav-link" href="{{ url_for('notifications',title='notifications') }}">Notifications</a>
+              <a class="nav-item nav-link" href="{{ url_for('monitor') }}"
+                >Monitoring</a
+              >
+              <a
+                class="nav-item nav-link"
+                href="{{ url_for('notifications',title='notifications') }}"
+                >Notifications</a
+              >
               {% endif %}
               <script>
                 const socket = io.connect("http://10.110.30.104:5000");
-                if ('{{current_user.role}}' == 'User') {
-                  socket.on('connect', function () {
-                    socket.emit('logged_in', { pin: '{{current_user.pincode}}', url: window.location.pathname });
+                if ("{{current_user.role}}" == "User") {
+                  socket.on("connect", function () {
+                    socket.emit("logged_in", {
+                      pin: "{{current_user.pincode}}",
+                      url: window.location.pathname,
+                    });
                   });
                 }
 
-                socket.on('announcement', function (pin) {
-                  if ('{{current_user.role}}' == 'Volunteer' && pin == '{{current_user.pincode}}') {
-                    window.location.href = "{{url_for('notifications',title='New-Notification')}}";
+                socket.on("announcement", function (pin) {
+                  if (
+                    "{{current_user.role}}" == "Volunteer" &&
+                    pin == "{{current_user.pincode}}"
+                  ) {
+                    window.location.href =
+                      "{{url_for('notifications',title='New-Notification')}}";
                   }
                 });
 
-                if (window.location.href.includes('/ack')) {
-                  if ('{{text}}'.includes('already') == false) {
-                    var tmp = '{{text}}'.indexOf('volunteer') + 10;
-                    var u_id1 = window.location.pathname.indexOf('ack') + 4;
-                    var u_id2 = window.location.pathname.indexOf('/', u_id1);
-                    var u_id = parseInt(window.location.pathname.substring(u_id1, u_id2));
-                    socket.emit('notify', { name: '{{text}}'.slice(tmp), id: u_id });
+                if (window.location.href.includes("/ack")) {
+                  if ("{{text}}".includes("already") == false) {
+                    var tmp = "{{text}}".indexOf("volunteer") + 10;
+                    var u_id1 = window.location.pathname.indexOf("ack") + 4;
+                    var u_id2 = window.location.pathname.indexOf("/", u_id1);
+                    var u_id = parseInt(
+                      window.location.pathname.substring(u_id1, u_id2)
+                    );
+                    socket.emit("notify", {
+                      name: "{{text}}".slice(tmp),
+                      id: u_id,
+                    });
                   }
                 }
 
-                socket.on('notify_user', function (data) {
-                  if ('{{current_user.id}}' == data['id']) {
+                socket.on("notify_user", function (data) {
+                  if ("{{current_user.id}}" == data["id"]) {
                     const e = document.createElement("p");
-                    e.innerText = data['name'] + ' accepted';
+                    e.innerText = data["name"] + " accepted";
                     document.body.appendChild(e);
                   }
                 });
               </script>
               {% else %}
-              <a class="nav-item nav-link" href="{{ url_for('login',role='User') }}">User Login</a>
-              <a class="nav-item nav-link" href="{{ url_for('register',role='User') }}">User Register</a>
-              <a class="nav-item nav-link" href="{{ url_for('login',role='Volunteer') }}">Volunteer Login</a>
-              <a class="nav-item nav-link" href="{{ url_for('register',role='Volunteer') }}">Volunteer Register</a>
+              <a
+                class="nav-item nav-link"
+                href="{{ url_for('login',role='User') }}"
+                >User Login</a
+              >
+              <a
+                class="nav-item nav-link"
+                href="{{ url_for('register',role='User') }}"
+                >User Register</a
+              >
+              <a
+                class="nav-item nav-link"
+                href="{{ url_for('login',role='Volunteer') }}"
+                >Volunteer Login</a
+              >
+              <a
+                class="nav-item nav-link"
+                href="{{ url_for('register',role='Volunteer') }}"
+                >Volunteer Register</a
+              >
               {% endif %}
             </div>
           </div>
@@ -92,32 +155,31 @@
     <main role="main" class="container">
       <div class="row">
         <div class="col-md-8">
-          {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-          {% for category, message in messages %}
-          <div class="alert alert-{{ category }}">
-            {{ message }}
-          </div>
-          {% endfor %}
-          {% endif %}
-          {% endwith %}
-          {% block content %}{% endblock %}
+          {% with messages = get_flashed_messages(with_categories=true) %} {% if
+          messages %} {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">{{ message }}</div>
+          {% endfor %} {% endif %} {% endwith %} {% block content %}{% endblock
+          %}
         </div>
       </div>
     </main>
 
-
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
       integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-      crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
       integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-      crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
       integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-      crossorigin="anonymous"></script>
+      crossorigin="anonymous"
+    ></script>
   </body>
-
 </html>

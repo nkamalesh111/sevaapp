@@ -6,3 +6,4 @@ flask_login
 flask_socketio
 email_validator
 web-socket
+python-dateutil

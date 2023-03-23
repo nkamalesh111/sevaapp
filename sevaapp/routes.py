@@ -9,6 +9,7 @@ from sevaapp.forms import (
 from sevaapp.models import User, Notification
 from flask_login import login_user, current_user, logout_user, login_required
 from datetime import datetime
+from dateutil import relativedelta
 # FOR SIGN IN AND SIGN UP
 ####################################################################
 # Creates a table in databease
@@ -172,21 +173,25 @@ def ack(usr_id, date, time):
 def monitor():
     form = MonitoringForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.patient.data, role="User").first()
-        if user.monitoring_applied == "No":
-            user.monitoring_applied = "Yes"
-            user.counter = 0
-            db.session.commit()
-            flash("Monitoring is applied successfully", "success")
+        if user := User.query.filter_by(username=form.patient.data).first():
+            if user.monitoring_applied == 'No':
+                user.monitoring_applied = 'Yes'
+                user.counter = 0
+                user.date = str(datetime.now().date())
+                db.session.commit()
+                flash(
+                    f'Monitoring is applied successfully for {user.username}', 'success')
+            else:
+                flash(f'Patient: {user.username} is already been monitored', 'warning')
+            patient_status()
+            return redirect(url_for('home'))
         else:
-            flash("Patient is already been monitored")
-        return redirect(url_for("home"))
-    return render_template(
-        "monitoring.html",
-        title="Monitoring",
-        form=form,
-    )
-# It will print alert if user has not submitted the form for 3 or more days
+            flash('Check patient username', 'danger')
+        patient_status()
+    patient_status()
+    return render_template('monitoring.html', title='Monitoring', form=form, )
+
+# It will alert the user if user has not submitted the form for 3 or more days
 def patient_status():
     user = User.query.filter_by(monitoring_applied='Yes').all()
     date1, date2 = 0, 0
@@ -209,25 +214,25 @@ def med_taken():
     user = User.query.filter_by(id=current_user.id, role="User").first()
     if user.monitoring_applied == "Yes":
         today = str(datetime.now().date())
-        if user.date is None or user.date < today:
-            form = MedicineTakenForm()
-            if form.validate_on_submit():
-                if form.med_taken.data == "No":
-                    user.counter += 1
-                user.date = today
-                db.session.commit()
-                flash(
-                    "Your daily monitoring has been checked successfully :) ", "success"
-                )
-                return redirect(url_for("home"))
-            return render_template(
-                "med_taken.html",
-                title="Medicine_Taken",
-                form=form,
+        # if user.date is None or user.date < today:
+        form = MedicineTakenForm()
+        if form.validate_on_submit():
+            if form.med_taken.data == "No":
+                user.counter += 1
+            user.date = today
+            db.session.commit()
+            flash(
+                "Your daily monitoring has been checked successfully :) ", "success"
             )
-        else:
-            flash("You have already submitted your option for today.", "warning")
             return redirect(url_for("home"))
+        return render_template(
+            "med_taken.html",
+            title="Medicine_Taken",
+            form=form,
+        )
+        # else:
+        #     flash("You have already submitted your option for today.", "warning")
+        #     return redirect(url_for("home"))
     else:
         flash("Doctor has not assigned any monitoring on you", "warning")
         return redirect(url_for("home"))
