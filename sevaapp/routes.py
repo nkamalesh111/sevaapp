@@ -214,25 +214,25 @@ def med_taken():
     user = User.query.filter_by(id=current_user.id, role="User").first()
     if user.monitoring_applied == "Yes":
         today = str(datetime.now().date())
-        # if user.date is None or user.date < today:
-        form = MedicineTakenForm()
-        if form.validate_on_submit():
-            if form.med_taken.data == "No":
-                user.counter += 1
-            user.date = today
-            db.session.commit()
-            flash(
-                "Your daily monitoring has been checked successfully :) ", "success"
+        if user.date is None or user.date < today:
+            form = MedicineTakenForm()
+            if form.validate_on_submit():
+                if form.med_taken.data == "No":
+                    user.counter += 1
+                user.date = today
+                db.session.commit()
+                flash(
+                    "Your daily monitoring has been checked successfully :) ", "success"
+                )
+                return redirect(url_for("home"))
+            return render_template(
+                "med_taken.html",
+                title="Medicine_Taken",
+                form=form,
             )
+        else:
+            flash("You have already submitted your option for today.", "warning")
             return redirect(url_for("home"))
-        return render_template(
-            "med_taken.html",
-            title="Medicine_Taken",
-            form=form,
-        )
-        # else:
-        #     flash("You have already submitted your option for today.", "warning")
-        #     return redirect(url_for("home"))
     else:
         flash("Doctor has not assigned any monitoring on you", "warning")
         return redirect(url_for("home"))

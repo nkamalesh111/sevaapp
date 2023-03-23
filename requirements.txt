@@ -5,5 +5,5 @@ flask_bcrypt
 flask_login
 flask_socketio
 email_validator
-web-socket
+simple-websocket
 python-dateutil
