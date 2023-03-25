@@ -8,25 +8,24 @@ def load_user(user_id):
 
 
 class User(db.Model, UserMixin):
-    __tablename__ = "User"
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(20), nullable=False)
-    email = db.Column(db.String(120), nullable=False)
-    # image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
+    firstname = db.Column(db.String(20), nullable=False)
+    lastname = db.Column(db.String(20), nullable=False)
+    username = db.Column(db.String(50), nullable=False)
+    number = db.Column(db.String(15), nullable=False)
     password = db.Column(db.String(60), nullable=False)
     counter = db.Column(db.Integer, nullable=False)
     monitoring_applied = db.Column(db.String(5), nullable=False, default="No")
     date = db.Column(db.String(10), nullable=True, default=None)
     address = db.Column(db.String(250), nullable=False)
-    role = db.Column(db.String(60), nullable=False)
+    role = db.Column(db.String(15), nullable=False)
     pincode = db.Column(db.String(10), nullable=False)
 
     def __repr__(self):
-        return f"User('{self.username}', '{self.email}')"
+        return f"User('{self.id}')"
 
 
 class Notification(db.Model):
-    __tablename__ = "Notification"
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, nullable=False)
     date1 = db.Column(db.String(20))
@@ -36,3 +35,6 @@ class Notification(db.Model):
     volunteer_id = db.Column(db.Integer)
     action = db.Column(db.String(5), nullable=False)
     pincode = db.Column(db.String(10), nullable=False)
+
+    def __repr__(self):
+        return f"User('{self.id}')"

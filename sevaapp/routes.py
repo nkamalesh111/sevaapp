@@ -40,8 +40,10 @@ def register(role):
             "utf-8"
         )
         user = User(
-            username=form.username.data,
-            email=form.email.data,
+            firstname=form.f_name.data,
+            lastname=form.l_name.data,
+            username=form.f_name.data.lower()+form.l_name.data.lower(),
+            number=form.number.data,
             pincode=form.pincode.data,
             password=hashed_password,
             role=form.role.data,
@@ -62,13 +64,13 @@ def login(role):
     form = LoginForm()
     form.role.data = role
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data, role=form.role.data).first()
+        user = User.query.filter_by(number=form.number.data, role=form.role.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=True)
             next_page = request.args.get("next")
             return redirect(next_page) if next_page else redirect(url_for("account"))
         else:
-            flash("Login Unsuccessful. Please check email and password", "danger")
+            flash("Login Unsuccessful. Please check number and password", "danger")
     return render_template("login.html", title=role + " Login", form=form)
 
 # Logout from the user or volunteer account
@@ -88,19 +90,19 @@ def account():
 #######################################################################################
 @socketio.on("logged_in")
 def handle_logged_in_event(data):
-    if data["url"] == url_for("tmp"):
-        socketio.emit("announcement", data["pin"], broadcast=True, include_self=False)
+    if data["url"] == url_for("help"):
+        socketio.emit("announcement", data["pin"], include_self=False)
 
 
 @socketio.on("notify")
 def handle_notify_event(data):
-    print(data)
-    socketio.emit("notify_user", data, broadcast=True, include_self=False)
+    data['num']=User.query.filter_by(id=data['id']).first().number
+    socketio.emit("notify_user", data, include_self=False)
 
 
-@app.route("/tmp")
+@app.route("/help")
 @login_required
-def tmp():
+def help():
     n = Notification.query.filter_by(user_id=current_user.id).first()
     n = Notification(
         user_id=current_user.id,
@@ -154,16 +156,15 @@ def ack(usr_id, date, time):
             usr=User.query.filter_by(id=usr_id).first(),
             date=date,
             time=time,
-            text="accepted by volunteer " + current_user.username,
+            text="accepted by volunteer " + current_user.firstname+" "+current_user.lastname,
         )
+    v=User.query.filter_by(id=n.volunteer_id).first()
     return render_template(
         "user_details.html",
         usr=User.query.filter_by(id=usr_id).first(),
         date=date,
         time=time,
-        text="already accepted by volunteer "
-        + User.query.filter_by(id=n.volunteer_id).first().username,
-    )
+        text="already accepted by volunteer "+v.firstname+" "+v.lastname)
 
 # FOR ADHERENCE MONITORING
 #############################################################################################
@@ -203,7 +204,7 @@ def patient_status():
         date2 = datetime.strptime(today, "%Y-%m-%d")
         difference = relativedelta.relativedelta(date2, date1)
         if (i.counter + difference.days) >= 3:
-            flash(f'{i.username} has skipped the medication', 'danger')
+            flash(f'{i.firstname} {i.lastname} has skipped the medication', 'danger')
     return redirect(url_for('home'))
 
 

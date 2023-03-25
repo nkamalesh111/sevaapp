@@ -1,7 +1,8 @@
 {% extends "layout.html" %}
 {% block content %}
-<h1>Name-{{usr.username}}</h1>
-<h1>Email-{{usr.email}}</h1>
+<h1>Name-{{usr.firstname}} {{usr.lastname}}</h1>
+<h1>Phone Number-{{usr.number}}</h1>
+<h1>Address-{{usr.address}}</h1>
 {% if text=='accept' %}
 <a class="nav-item nav-link" href="{{url_for('ack',usr_id=usr.id,date=date,time=time)}}">accept </a>
 {% else %}

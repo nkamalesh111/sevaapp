@@ -2,8 +2,9 @@
 <div class="media">
   <!-- <img class="rounded-circle account-img" src="{{ image_file }}" /> -->
   <div class="media-body">
-    <h2 class="account-heading">{{ current_user.username }} - {{current_user.role}}</h2>
-    <p class="text-secondary">{{ current_user.email}}</p>
+    <h2 class="account-heading">{{ current_user.firstname }} {{ current_user.lastname }}</h2>
+    <p class="text-secondary">{{ current_user.number}}</p>
+    <p class="text-secondary">{{ current_user.address}}</p>
   </div>
   <!-- FROM HERE -->
 </div>

@@ -7,3 +7,4 @@ flask_socketio
 email_validator
 simple-websocket
 python-dateutil
+phonenumbers
