@@ -174,7 +174,7 @@ def ack(usr_id, date, time):
 def monitor():
     form = MonitoringForm()
     if form.validate_on_submit():
-        if user := User.query.filter_by(username=form.patient.data).first():
+        if user := User.query.filter_by(username=form.patient.data,role='User').first():
             if user.monitoring_applied == 'No':
                 user.monitoring_applied = 'Yes'
                 user.counter = 0
@@ -198,7 +198,7 @@ def patient_status():
     date1, date2 = 0, 0
     for i in user:
         today = str(datetime.now().date())
-        print(type(today))
+        # print(type(today))
 
         date1 = datetime.strptime(i.date, "%Y-%m-%d")
         date2 = datetime.strptime(today, "%Y-%m-%d")
@@ -208,19 +208,21 @@ def patient_status():
     return redirect(url_for('home'))
 
 
-# This function will store the user's choice of taking medicine or not 
+# This function will store the user's choice, whether he has taken medicine or not for the given day only. 
 @app.route("/med_taken", methods=["GET", "POST"])
 @login_required
 def med_taken():
     user = User.query.filter_by(id=current_user.id, role="User").first()
     if user.monitoring_applied == "Yes":
         today = str(datetime.now().date())
-        if user.date is None or user.date < today:
+        if user.date <= today:# to check that patient should not enter twice the form for the same date
             form = MedicineTakenForm()
             if form.validate_on_submit():
                 if form.med_taken.data == "No":
-                    user.counter += 1
-                user.date = today
+                    user.counter += 1 # counts how many days 
+                tomorrow = datetime.strptime(today, "%Y-%m-%d") + relativedelta.relativedelta(days=1)
+                tomorrow = tomorrow.strftime("%Y-%m-%d")
+                user.date = tomorrow
                 db.session.commit()
                 flash(
                     "Your daily monitoring has been checked successfully :) ", "success"

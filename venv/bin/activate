@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="/home/kamalesh/flask_app/sevaapp/venv"
+VIRTUAL_ENV="/home/debasis/Desktop/sem2/sevaapp/venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
