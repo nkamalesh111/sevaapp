@@ -23,14 +23,13 @@ class RegistrationForm(FlaskForm):
         try:
             p = phonenumbers.parse(phone.data)
             if not phonenumbers.is_valid_number(p):
-                raise ValueError()
+                raise ValidationError('Invalid phone number')
             else:
                 p = User.query.filter_by(number=phone.data,role=self.role.data).first()
                 if p:
                     raise ValidationError('phone number already exists. Please choose another one.')      
-        except (phonenumbers.phonenumberutil.NumberParseException, ValueError):
+        except phonenumbers.phonenumberutil.NumberParseException:
             raise ValidationError('Invalid phone number')
-
     def validate_username(self,f_name):
         usr = User.query.filter_by(firstname=f_name.data,lastname=self.l_name.data,role=self.role.data).first()
         if usr:

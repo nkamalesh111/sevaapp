@@ -79,7 +79,6 @@
                 const socket = io.connect("http://10.110.30.104:5000");
                 if ("{{current_user.role}}" == "User") {
                   socket.on("connect", function () {
-                    console.log('wrgerg');
                     socket.emit("logged_in", {
                       pin: "{{current_user.pincode}}",
                       url: window.location.pathname,
