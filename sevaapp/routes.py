@@ -172,9 +172,16 @@ def ack(usr_id, date, time):
 @app.route("/monitor", methods=["GET", "POST"])
 @login_required
 def monitor():
+    user_name = User.query.filter_by(role='User').all()
+    # print(name)
+    namelst = [(i.id,i.username) for i in user_name]
+    
     form = MonitoringForm()
+    form.userid.choices = namelst
     if form.validate_on_submit():
-        if user := User.query.filter_by(username=form.patient.data,role='User').first():
+        
+        if user := User.query.filter_by(id=form.userid.data,role='User').first():
+            print(user)
             if user.monitoring_applied == 'No':
                 user.monitoring_applied = 'Yes'
                 user.counter = 0
@@ -190,7 +197,7 @@ def monitor():
             flash('Check patient username', 'danger')
         patient_status()
     patient_status()
-    return render_template('monitoring.html', title='Monitoring', form=form, )
+    return render_template('monitoring.html', title='Monitoring', form=form )
 
 # It will alert the user if user has not submitted the form for 3 or more days
 def patient_status():

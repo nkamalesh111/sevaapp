@@ -6,16 +6,16 @@
       <legend class="border-bottom mb-4">
         Assign a patient to be monitored
       </legend>
-      <div class="form-group">
-        {{ form.patient.label(class="form-control-label") }} {% if
-        form.patient.errors %} {{ form.patient(class="form-control
+      <div class="form-group"> 
+        {{ form.userid.label(class="form-control-label") }} {% if
+        form.userid.errors %} {{ form.userid(class="form-control
         form-control-lg is-invalid") }}
         <div class="invalid-feedback">
-          {% for error in form.patient.errors %}
+          {% for error in form.userid.errors %}
           <span>{{ error }}</span>
           {% endfor %}
         </div>
-        {% else %} {{ form.patient(class="form-control form-control-lg") }} {%
+        {% else %} {{ form.userid(class="form-control form-control-lg") }} {%
         endif %}
       </div>
     </fieldset>

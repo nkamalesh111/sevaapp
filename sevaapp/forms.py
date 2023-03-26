@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, RadioField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, RadioField, SelectField
+from wtforms.validators import DataRequired,  EqualTo, ValidationError
 from sevaapp.models import User
 import phonenumbers
 
@@ -46,9 +46,7 @@ class LoginForm(FlaskForm):
 # the user is not assigned any monitoring features then volunteer can 
 # add user to the monitoring 
 class MonitoringForm(FlaskForm):
-    patient = StringField(
-        "Username", validators=[DataRequired()]
-    )
+    userid = SelectField('Patient name', validators=[DataRequired()] , coerce=int)
     submit = SubmitField("Submit")
 
 # This form stores the data if user had taken medicine for the day or not 
