@@ -20,6 +20,9 @@
       type="text/css"
       href="{{ url_for('static', filename='css/main.css') }}"
     />
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
     {% if title %}
     <title>Seva App - {{ title }}</title>
     {% else %}
@@ -62,8 +65,16 @@
               >
               {% if current_user.role=='User' %}
               <a class="nav-item nav-link" href="{{ url_for('help') }}">Help Me</a>
+              
               <a class="nav-item nav-link" href="{{ url_for('med_taken') }}"
-                >Medcine Taken</a
+                >
+                <div class="row align-items-start">
+                Medcine Taken
+                <span class="material-symbols-outlined">
+                    select_check_box 
+                    </span>
+                </div>   
+                </a
               >
               {% else %}
               <a class="nav-item nav-link" href="{{ url_for('monitor') }}"
@@ -120,26 +131,27 @@
                 });
               </script>
               {% else %}
-              <a
-                class="nav-item nav-link"
-                href="{{ url_for('login',role='User') }}"
-                >User Login</a
-              >
-              <a
-                class="nav-item nav-link"
-                href="{{ url_for('register',role='User') }}"
-                >User Register</a
-              >
-              <a
-                class="nav-item nav-link"
-                href="{{ url_for('login',role='Volunteer') }}"
-                >Volunteer Login</a
-              >
-              <a
-                class="nav-item nav-link"
-                href="{{ url_for('register',role='Volunteer') }}"
-                >Volunteer Register</a
-              >
+              <div class="dropdown show">
+                <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  User
+                </a>
+              
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                  <a class="dropdown-item" href="{{url_for('login',role='User')}}">Login</a>
+                  <a class="dropdown-item" href="{{url_for('register',role='User')}}">Register</a>
+                </div>
+              </div>
+
+                <div class="dropdown show">
+  <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    Volunteer
+  </a>
+
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+    <a class="dropdown-item" href="{{url_for('login',role='Volunteer')}}">Login</a>
+    <a class="dropdown-item" href="{{url_for('register',role='Volunteer')}}">Register</a>
+  </div>
+</div>
               {% endif %}
             </div>
           </div>

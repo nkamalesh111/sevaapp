@@ -54,7 +54,7 @@ def register(role):
         db.session.commit()
         flash("Your account has been created! You are now able to log in", "success")
         return redirect(url_for("login", role=role))
-    return render_template("register.html", title=role + " Register", form=form)
+    return render_template("register.html", title=f"{role} Register", form=form)
 
 # Login route where onn the basis of role of a person the system authenticates as user or volunteer
 @app.route("/login/<role>", methods=["GET", "POST"])
@@ -71,7 +71,7 @@ def login(role):
             return redirect(next_page) if next_page else redirect(url_for("account"))
         else:
             flash("Login Unsuccessful. Please check number and password", "danger")
-    return render_template("login.html", title=role + " Login", form=form)
+    return render_template("login.html", title=f"{role} Login", form=form)
 
 # Logout from the user or volunteer account
 @app.route("/logout")
@@ -156,7 +156,7 @@ def ack(usr_id, date, time):
             usr=User.query.filter_by(id=usr_id).first(),
             date=date,
             time=time,
-            text="accepted by volunteer " + current_user.firstname+" "+current_user.lastname,
+            text=f"accepted by volunteer {current_user.firstname} {current_user.lastname}",
         )
     v=User.query.filter_by(id=n.volunteer_id).first()
     return render_template(
@@ -164,7 +164,8 @@ def ack(usr_id, date, time):
         usr=User.query.filter_by(id=usr_id).first(),
         date=date,
         time=time,
-        text="already accepted by volunteer "+v.firstname+" "+v.lastname)
+        text=f"already accepted by volunteer {v.firstname} {v.lastname}",
+    )
 
 # FOR ADHERENCE MONITORING
 #############################################################################################

@@ -1,15 +1,16 @@
 body {
-  background: #fafafa;
+  background: #F4DECB;
   color: #333333;
   margin-top: 5rem;
+  font-family: 'Assistant', sans-serif;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  color: #444444;
+  color: #070101;
 }
 
 .bg-steel {
-  background-color: #5f788a;
+  background-color: #94618E;
 }
 
 .site-header .navbar-nav .nav-link {
@@ -17,7 +18,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .site-header .navbar-nav .nav-link:hover {
-  color: #ffffff;
+  color: #c98d34;
 }
 
 .site-header .navbar-nav .nav-link.active {
@@ -25,47 +26,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .content-section {
-  background: #ffffff;
+  background: #F8EEE7;
   padding: 10px 20px;
   border: 1px solid #dddddd;
   border-radius: 3px;
   margin-bottom: 20px;
-}
-
-.article-title {
-  color: #444444;
-}
-
-a.article-title:hover {
-  color: #428bca;
-  text-decoration: none;
-}
-
-.article-content {
-  white-space: pre-line;
-}
-
-.article-img {
-  height: 65px;
-  width: 65px;
-  margin-right: 16px;
-}
-
-.article-metadata {
-  padding-bottom: 1px;
-  margin-bottom: 4px;
-  border-bottom: 1px solid #e3e3e3
-}
-
-.article-metadata a:hover {
-  color: #333;
-  text-decoration: none;
-}
-
-.article-svg {
-  width: 25px;
-  height: 25px;
-  vertical-align: middle;
 }
 
 .account-img {
@@ -77,4 +42,24 @@ a.article-title:hover {
 
 .account-heading {
   font-size: 2.5rem;
+}
+  
+  /* Change color of dropdown links on hover */
+  .dropdown-content a:hover {background-color: #ddd;}
+  
+  /* Show the dropdown menu on hover */
+  .dropdown:hover .dropdown-content {display: block;}
+  
+  /* Change the background color of the dropdown button when the dropdown content is shown */
+  .dropdown:hover .dropbtn {background-color: #3e8e41;}
+
+  .btn-secondary {
+    color: #fff;
+    background-color: #94618E;
+    border-color: #94618E;
+}
+ .show>.btn-secondary.dropdown-toggle {
+    color: #fff;
+    background-color: #94618E;
+    border-color:#94618E;
 }
