@@ -63,6 +63,9 @@
               <a class="nav-item nav-link" href="{{ url_for('logout') }}"
                 >Logout</a
               >
+              <a class="nav-item nav-link" href="{{ url_for('delete') }}"
+                >Delete Account</a
+              >
               {% if current_user.role=='User' %}
               <a class="nav-item nav-link" href="{{ url_for('help') }}">Help Me</a>
               

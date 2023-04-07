@@ -73,6 +73,15 @@ def login(role):
             flash("Login Unsuccessful. Please check number and password", "danger")
     return render_template("login.html", title=f"{role} Login", form=form)
 
+#to delete account
+@app.route("/del")
+@login_required
+def delete():
+    User.query.filter_by(id=current_user.id).delete()
+    db.session.commit()
+    flash("account deleted successfully","success")
+    return redirect(url_for("home"))
+
 # Logout from the user or volunteer account
 @app.route("/logout")
 @login_required
