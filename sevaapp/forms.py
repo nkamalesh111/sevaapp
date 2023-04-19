@@ -1,5 +1,9 @@
 from flask_wtf import FlaskForm
+<<<<<<< HEAD
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, RadioField, SelectField, DateField
+=======
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, RadioField, SelectField, IntegerField
+>>>>>>> 1c556407f31b323dda2fa5f8ea9e1f3dba06e313
 from wtforms.validators import DataRequired,  EqualTo, ValidationError
 from sevaapp.models import User
 import phonenumbers
@@ -14,7 +18,7 @@ class RegistrationForm(FlaskForm):
     number = StringField("Phone Number", validators=[DataRequired()])
     address = StringField("Address", validators=[DataRequired()])
     role = StringField("Role")
-    pincode = StringField("Pincode", validators=[DataRequired()])
+    pincode = IntegerField("Pincode", validators=[DataRequired()])
     password = PasswordField("Password", validators=[DataRequired()])
     confirm_password = PasswordField(
         "Confirm Password", validators=[DataRequired(), EqualTo("password")]
@@ -39,7 +43,7 @@ class RegistrationForm(FlaskForm):
             raise ValidationError('firstname and lastname are chosen. Please choose a different one.')
     def validate_pincode(self,pin):
         regex = "^[1-9]{1}[0-9]{2}\\s{0,1}[0-9]{3}$";
-        m = re.match(regex, pin.data)
+        m = re.match(regex, str(pin.data))
         if m is None:
             raise ValidationError('Invalid pincode')
         else:

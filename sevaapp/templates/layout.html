@@ -96,6 +96,7 @@
                     socket.emit("logged_in", {
                       pin: "{{current_user.pincode}}",
                       url: window.location.pathname,
+                      id: "{{current_user.id}}",
                     });
                   });
                 }
@@ -114,19 +115,19 @@
                   if ("{{text}}".includes("already") == false) {
                     var tmp = "{{text}}".indexOf("volunteer") + 10;
                     var u_id1 = window.location.pathname.indexOf("ack") + 4;
-                    var u_id2 = window.location.pathname.indexOf("/", u_id1);
                     var u_id = parseInt(
-                      window.location.pathname.substring(u_id1, u_id2)
+                      window.location.pathname.substring(u_id1)
                     );
                     socket.emit("notify", {
                       name: "{{text}}".slice(tmp),
-                      id: u_id,
+                      id1: u_id,
+                      id2: "{{current_user.id}}",
                     });
                   }
                 }
 
                 socket.on("notify_user", function (data) {
-                  if ("{{current_user.id}}" == data["id"]) {
+                  if ("{{current_user.id}}" == data["id1"]) {
                     const e = document.createElement("p");
                     e.innerHTML = 'Volunteer <b>'+data['name']+'</b> accepted<br>Phone Number: <b>'+data['num']+'</b>';
                     document.body.appendChild(e);

@@ -1,4 +1,4 @@
-from flask import render_template, url_for, flash, redirect, request
+from flask import render_template, url_for, flash, redirect, request, copy_current_request_context
 from sevaapp import app, db, bcrypt, socketio
 from sevaapp.forms import (
     RegistrationForm,
@@ -11,8 +11,12 @@ from sevaapp.models import User, Notification
 from flask_login import login_user, current_user, logout_user, login_required
 from datetime import datetime
 from dateutil import relativedelta
+import time, gevent
 # FOR SIGN IN AND SIGN UP
 ####################################################################
+d={}
+###############
+
 # Creates a table in databease
 @app.before_first_request
 def create_tables():
@@ -54,7 +58,10 @@ def register(role):
         db.session.add(user)
         db.session.commit()
         flash("Your account has been created! You are now able to log in", "success")
-        return redirect(url_for("login", role=role))
+        try:
+            logout_user()
+        finally:
+            return redirect(url_for("login", role=role))
     return render_template("register.html", title=f"{role} Register", form=form)
 
 # Login route where onn the basis of role of a person the system authenticates as user or volunteer
@@ -98,28 +105,41 @@ def account():
 
 # FOR COMMUNICATION BETWEEN USER AND VOLUNTEERS
 #######################################################################################
+
 @socketio.on("logged_in")
 def handle_logged_in_event(data):
     if data["url"] == url_for("help"):
-        socketio.emit("announcement", data["pin"], include_self=False)
+        d[data["id"]]=[0,[]]
+        @copy_current_request_context
+        def chk(a,b):
+            while True:
+                q=User.query.filter(User.pincode.notin_(d[a][1]),User.role=='Volunteer').with_entities(User.pincode).all()
+                if q:
+                    distances=[abs(int(b)-i[0]) for i in q]
+                    closest_pincode=q[distances.index(min(distances))][0]
+                    d[a][1].append(closest_pincode)
+                else:
+                    break
+                socketio.emit("announcement", d[a][1][-1], include_self=False)
+                time.sleep(30)
+                if d[a][0]==1:
+                    break
+                    
+        gevent.spawn(chk,data["id"],data["pin"])
 
 
 @socketio.on("notify")
 def handle_notify_event(data):
-    data['num']=User.query.filter_by(id=data['id']).first().number
+    data['num']=User.query.filter_by(id=data['id2']).first().number
     socketio.emit("notify_user", data, include_self=False)
 
 
 @app.route("/help")
 @login_required
 def help():
-    n = Notification.query.filter_by(user_id=current_user.id).first()
     n = Notification(
         user_id=current_user.id,
-        date1=str(datetime.now().date()),
-        time1=str(datetime.now().time()),
         action="no",
-        pincode=current_user.pincode,
     )
     db.session.add(n)
     db.session.commit()
@@ -130,50 +150,44 @@ def help():
 @login_required
 def notifications(title):
     n = (
-        Notification.query.filter_by(pincode=current_user.pincode, action="no")
-        .order_by(Notification.date1.desc(), Notification.time1.desc())
+        Notification.query.filter_by(action="no")
+        .order_by(Notification.id.desc()).with_entities(Notification.id,Notification.user_id)
         .all()
     )
-    return render_template("display.html", n=n, title=title)
+    u = User.query.filter(User.id.in_([i.user_id for i in n])).with_entities(User.firstname,User.lastname).all()
+    return render_template("display.html", n=n, u=u, title=title)
 
 
-@app.route("/details/<id>/<date>/<time>")
+@app.route("/details/<id1>/<id2>")
 @login_required
-def details(id, date, time):
-    usr = User.query.filter_by(id=id).first()
+def details(id1,id2):
+    usr = User.query.filter_by(id=id1).first()
     return render_template(
-        "user_details.html", usr=usr, date=date, time=time, text="accept"
+        "user_details.html", usr=usr, id=id2, text="accept"
     )
 
 
-@app.route("/ack/<usr_id>/<date>/<time>")
+@app.route("/ack/<usr_id>/<v_id>")
 @login_required
-def ack(usr_id, date, time):
+def ack(usr_id,v_id):
     n = Notification.query.filter_by(
-        pincode=current_user.pincode,
-        user_id=usr_id,
-        date1=date,
-        time1=time,
+        user_id=usr_id,id=v_id
     ).first()
     if n.action == "no":
+        d[usr_id][0]=1
         n.action = "yes"
-        n.date2 = str(datetime.now().date())
-        n.time2 = str(datetime.now().time())
         n.volunteer_id = current_user.id
+        n.pincode = current_user.pincode
         db.session.commit()
         return render_template(
             "user_details.html",
             usr=User.query.filter_by(id=usr_id).first(),
-            date=date,
-            time=time,
             text=f"accepted by volunteer {current_user.firstname} {current_user.lastname}",
         )
     v=User.query.filter_by(id=n.volunteer_id).first()
     return render_template(
         "user_details.html",
         usr=User.query.filter_by(id=usr_id).first(),
-        date=date,
-        time=time,
         text=f"already accepted by volunteer {v.firstname} {v.lastname}",
     )
 
@@ -184,7 +198,6 @@ def ack(usr_id, date, time):
 @login_required
 def monitor():
     user_name = User.query.filter_by(role='User').all()
-    # print(name)
     namelst = [(i.id,i.username) for i in user_name]
     
     form = MonitoringForm()
