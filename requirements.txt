@@ -8,3 +8,5 @@ email_validator
 simple-websocket
 python-dateutil
 phonenumbers
+gevent
+gevent-websocket

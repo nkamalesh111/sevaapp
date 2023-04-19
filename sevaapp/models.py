@@ -1,6 +1,6 @@
 from sevaapp import db, login_manager
 from flask_login import UserMixin
-
+from sqlalchemy.dialects.mysql import BIGINT
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -19,7 +19,7 @@ class User(db.Model, UserMixin):
     date = db.Column(db.String(10), nullable=True, default=None)
     address = db.Column(db.String(250), nullable=False)
     role = db.Column(db.String(15), nullable=False)
-    pincode = db.Column(db.String(10), nullable=False)
+    pincode = db.Column(db.BIGINT(), nullable=False)
 
     def __repr__(self):
         return f"User('{self.id}')"
@@ -28,13 +28,9 @@ class User(db.Model, UserMixin):
 class Notification(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, nullable=False)
-    date1 = db.Column(db.String(20))
-    time1 = db.Column(db.String(20))
-    date2 = db.Column(db.String(20))
-    time2 = db.Column(db.String(20))
     volunteer_id = db.Column(db.Integer)
     action = db.Column(db.String(5), nullable=False)
-    pincode = db.Column(db.String(10), nullable=False)
+    pincode = db.Column(db.BIGINT())
 
     def __repr__(self):
         return f"User('{self.id}')"
