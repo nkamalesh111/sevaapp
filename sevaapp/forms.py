@@ -1,9 +1,10 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, RadioField, SelectField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, RadioField, SelectField, DateField
 from wtforms.validators import DataRequired,  EqualTo, ValidationError
 from sevaapp.models import User
 import phonenumbers
 import re
+
 
 # This form stores the user or volunteer information which will be useful further
 class RegistrationForm(FlaskForm):
@@ -56,9 +57,15 @@ class LoginForm(FlaskForm):
 # add user to the monitoring 
 class MonitoringForm(FlaskForm):
     userid = SelectField('Patient name', validators=[DataRequired()] , coerce=int)
+    startdate = DateField('start date',format='%Y-%m-%d',validators=[DataRequired()])
+    enddate = DateField('end date',format='%Y-%m-%d',validators=[DataRequired()])
     submit = SubmitField("Submit")
 
 # This form stores the data if user had taken medicine for the day or not 
 class MedicineTakenForm(FlaskForm):
     med_taken = RadioField("option", choices=[("Yes", "Yes"), ("No", "No")])
+    submit = SubmitField("Submit")
+
+class DeleteForm(FlaskForm):
+    userid = SelectField('Patient name', validators=[DataRequired()] , coerce=int)
     submit = SubmitField("Submit")

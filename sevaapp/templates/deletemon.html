@@ -1,0 +1,29 @@
+{% extends "layout.html" %} {% block content %}
+{% import "bootstrap/wtf.html" as wtf %}
+<div class="content-section">
+  <form method="POST" action="">
+    {{ form.hidden_tag() }}
+    <fieldset class="form-group">
+      <legend class="border-bottom mb-4">
+        Assign a patient to be deleted
+      </legend>
+      <div class="form-group"> 
+        {{ form.userid.label(class="form-control-label") }} {% if
+        form.userid.errors %} {{ form.userid(class="form-control
+        form-control-lg is-invalid") }}
+        <div class="invalid-feedback">
+          {% for error in form.userid.errors %}
+          <span>{{ error }}</span>
+          {% endfor %}
+        </div>
+        {% else %} {{ form.userid(class="form-control form-control-lg") }} {%
+        endif %}
+      </div>
+
+    </fieldset>
+    <div class="form-group">
+      {{ form.submit(class="btn btn-outline-info") }}
+    </div>
+  </form>
+</div>
+{% endblock content %}

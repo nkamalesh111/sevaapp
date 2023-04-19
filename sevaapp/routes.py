@@ -5,6 +5,7 @@ from sevaapp.forms import (
     LoginForm,
     MonitoringForm,
     MedicineTakenForm,
+    DeleteForm,
 )
 from sevaapp.models import User, Notification
 from flask_login import login_user, current_user, logout_user, login_required
@@ -191,11 +192,11 @@ def monitor():
     if form.validate_on_submit():
         
         if user := User.query.filter_by(id=form.userid.data,role='User').first():
-            print(user)
-            if user.monitoring_applied == 'No':
-                user.monitoring_applied = 'Yes'
+            if user.date is None:
                 user.counter = 0
-                user.date = str(datetime.now().date())
+                user.startdate = str(form.startdate.data)
+                user.date = user.startdate
+                user.enddate = str(form.enddate.data)
                 db.session.commit()
                 flash(
                     f'Monitoring is applied successfully for {user.username}', 'success')
@@ -211,27 +212,45 @@ def monitor():
 
 # It will alert the user if user has not submitted the form for 3 or more days
 def patient_status():
-    user = User.query.filter_by(monitoring_applied='Yes').all()
+    user = User.query.filter(User.date!=None).all()
     date1, date2 = 0, 0
     for i in user:
         today = str(datetime.now().date())
         # print(type(today))
 
-        date1 = datetime.strptime(i.date, "%Y-%m-%d")
+        date1 = datetime.strptime(i.startdate, "%Y-%m-%d")
         date2 = datetime.strptime(today, "%Y-%m-%d")
         difference = relativedelta.relativedelta(date2, date1)
         if (i.counter + difference.days) >= 3:
-            flash(f'{i.firstname} {i.lastname} has skipped the medication', 'danger')
+            flash(f'{i.firstname} {i.lastname} has skipped the medication for {i.counter + difference.days} days', 'danger')
     return redirect(url_for('home'))
 
-
+@app.route('/deletemon', methods=["GET", "POST"])
+def deletemon():
+    user_name = User.query.filter(User.date !=None, User.role=='User').all()
+    namelst = [(i.id,i.username) for i in user_name]
+    form = DeleteForm()
+    form.userid.choices = namelst
+    if form.validate_on_submit():
+        
+        if user := User.query.filter_by(id=form.userid.data,role='User').first():
+            user.counter = 0
+            user.startdate,user.enddate = None,None
+            user.date = user.startdate
+            db.session.commit()
+            flash(f'Monitoring deletion is done successfully for {user.username}', 'success')
+            return redirect(url_for('home'))
+    return render_template('deletemon.html', title='Delete', form=form )
+    
+    
 # This function will store the user's choice, whether he has taken medicine or not for the given day only. 
 @app.route("/med_taken", methods=["GET", "POST"])
 @login_required
 def med_taken():
     user = User.query.filter_by(id=current_user.id, role="User").first()
-    if user.monitoring_applied == "Yes":
-        today = str(datetime.now().date())
+    today = str(datetime.now().date())
+    print(user.date)
+    if user.date is not None and (today >= user.startdate and today <= user.enddate):
         if user.date <= today:# to check that patient should not enter twice the form for the same date
             form = MedicineTakenForm()
             if form.validate_on_submit():
@@ -253,6 +272,7 @@ def med_taken():
         else:
             flash("You have already submitted your option for today.", "warning")
             return redirect(url_for("home"))
+
     else:
         flash("Doctor has not assigned any monitoring on you", "warning")
         return redirect(url_for("home"))
