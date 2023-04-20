@@ -1,9 +1,6 @@
 from flask_wtf import FlaskForm
-<<<<<<< HEAD
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, RadioField, SelectField, DateField
-=======
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, RadioField, SelectField, IntegerField
->>>>>>> 1c556407f31b323dda2fa5f8ea9e1f3dba06e313
 from wtforms.validators import DataRequired,  EqualTo, ValidationError
 from sevaapp.models import User
 import phonenumbers
