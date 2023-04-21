@@ -2,10 +2,13 @@
 <div class="media">
   <!-- <img class="rounded-circle account-img" src="{{ image_file }}" /> -->
   <div class="media-body">
-    <h2 class="account-heading">{{ current_user.firstname }} {{ current_user.lastname }}</h2>
-    <p class="text-secondary">{{ current_user.number}}</p>
-    <p class="text-secondary">{{ current_user.address}}</p>
+    <h2 class="account-heading">Name : {{ current_user.firstname }} {{ current_user.lastname }}</h2>
+    <p class="text-secondary">Number : {{ current_user.number}}</p>
+    <p class="text-secondary">Address : {{ current_user.address}}</p>
   </div>
+
+  
   <!-- FROM HERE -->
 </div>
+<a class="btn btn-outline-info" href="{{ url_for('update_account',role=current_user.role) }}" role="button">Update account</a>
 {% endblock content %}

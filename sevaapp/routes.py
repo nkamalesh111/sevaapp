@@ -15,7 +15,6 @@ import time, gevent
 # FOR SIGN IN AND SIGN UP
 ####################################################################
 d={}
-###############
 
 # Creates a table in databease
 @app.before_first_request
@@ -103,29 +102,58 @@ def logout():
 def account():
     return render_template("account.html", title="Account")
 
+@app.route("/update_account/<role>", methods=["GET", "POST"])
+@login_required
+def update_account(role):
+    # if current_user.is_authenticated:
+    #     return redirect(url_for("home"))
+    tmp=User.query.filter_by(id=current_user.id).first()
+    form = RegistrationForm()
+    form.role.data = role
+    if form.validate_on_submit():
+        hashed_password = bcrypt.generate_password_hash(form.password.data).decode(
+            "utf-8"
+        )
+        
+        tmp.firstname=form.f_name.data
+        tmp.lastname=form.l_name.data
+        tmp.username=form.f_name.data.lower()+form.l_name.data.lower()
+        tmp.number=form.number.data
+        tmp.pincode=form.pincode.data
+        tmp.password=hashed_password
+        tmp.role=form.role.data
+        tmp.address=form.address.data
+        db.session.commit()
+        flash("Your account has been updated successfully", "success")
+        flash("logged out", "success")
+        return redirect(url_for("logout"))
+    return render_template("update_account.html", title=f"{role} update_account", form=form)
+
+    
 # FOR COMMUNICATION BETWEEN USER AND VOLUNTEERS
 #######################################################################################
 
 @socketio.on("logged_in")
 def handle_logged_in_event(data):
-    if data["url"] == url_for("help"):
-        d[data["id"]]=[0,[]]
-        @copy_current_request_context
-        def chk(a,b):
-            while True:
-                q=User.query.filter(User.pincode.notin_(d[a][1]),User.role=='Volunteer').with_entities(User.pincode).all()
-                if q:
-                    distances=[abs(int(b)-i[0]) for i in q]
-                    closest_pincode=q[distances.index(min(distances))][0]
-                    d[a][1].append(closest_pincode)
-                else:
-                    break
-                socketio.emit("announcement", d[a][1][-1], include_self=False)
-                time.sleep(30)
-                if d[a][0]==1:
-                    break
-                    
-        gevent.spawn(chk,data["id"],data["pin"])
+    if data["url"] != url_for("help"):
+        return
+    d[data["id"]]=[0,[]]
+    @copy_current_request_context
+    def chk(a,b):
+        while True:
+            q=User.query.filter(User.pincode.notin_(d[a][1]),User.role=='Volunteer').with_entities(User.pincode).all()
+            if q:
+                distances=[abs(int(b)-i[0]) for i in q]
+                closest_pincode=q[distances.index(min(distances))][0]
+                d[a][1].append(closest_pincode)
+            else:
+                break
+            socketio.emit("announcement", d[a][1][-1], include_self=False)
+            time.sleep(30)
+            if d[a][0]==1:
+                break
+
+    gevent.spawn(chk,data["id"],data["pin"])
 
 
 @socketio.on("notify")

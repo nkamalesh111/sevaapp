@@ -63,3 +63,23 @@ h1, h2, h3, h4, h5, h6 {
     background-color: #94618E;
     border-color:#94618E;
 }
+
+.btn-outline-info {
+    color: #94618E;
+    border-color:#94618E;
+    border-radius: 10px;
+}
+
+.btn-outline-info:hover{
+    background-color:#94618E ;
+}
+
+/* turn it off completely */
+.show>.btn-secondary.dropdown-toggle:active, select:hover {
+    outline: none
+  }
+  
+  /* make it red instead (with with same width and style) */
+.show>.btn-secondary.dropdown-toggle:active, select:hover {
+    outline-color: #94618E
+  }
