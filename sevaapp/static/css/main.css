@@ -67,13 +67,17 @@ h1, h2, h3, h4, h5, h6 {
 .btn-outline-info {
     color: #94618E;
     border-color:#94618E;
-    border-radius: 10px;
+    border-radius: 16px;
 }
 
 .btn-outline-info:hover{
     background-color:#94618E ;
 }
-
+.btn-outline-info:active{
+    background-color:#94618E ;
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+}
 /* turn it off completely */
 .show>.btn-secondary.dropdown-toggle:active, select:hover {
     outline: none
@@ -81,5 +85,9 @@ h1, h2, h3, h4, h5, h6 {
   
   /* make it red instead (with with same width and style) */
 .show>.btn-secondary.dropdown-toggle:active, select:hover {
-    outline-color: #94618E
+    background-color:#94618E ;
+    outline-color: #94618E;
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+}
   }

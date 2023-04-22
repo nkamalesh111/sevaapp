@@ -3,7 +3,7 @@ from wtforms import StringField, PasswordField, SubmitField, BooleanField, Radio
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, RadioField, SelectField, IntegerField
 from wtforms.validators import DataRequired,  EqualTo, ValidationError
 from sevaapp.models import User
-import phonenumbers
+import phonenumbers, string
 import re
 
 
@@ -33,11 +33,12 @@ class RegistrationForm(FlaskForm):
             #     raise ValidationError('phone number already exists. Please choose another one.')
         except phonenumbers.phonenumberutil.NumberParseException as e:
             raise ValidationError('Invalid phone number') from e
-    def validate_username(self,f):
-        if usr := User.query.filter_by(
-            firstname=f.data, lastname=self.l_name.data, role=self.role.data
-        ).first():
-            raise ValidationError('firstname and lastname are chosen. Please choose a different one.')
+    def validate_f_name(self,f):
+        if usr := User.query.filter_by(firstname=self.f_name.data, role=self.role.data).first():
+            raise ValidationError('firstname is already chosen. Please choose a different one.')
+    def validate_l_name(self,f):
+        if usr := User.query.filter_by(lastname=self.l_name.data, role=self.role.data).first():
+            raise ValidationError('lastname is already chosen. Please choose a different one.')    
     def validate_pincode(self,pin):
         regex = "^[1-9]{1}[0-9]{2}\\s{0,1}[0-9]{3}$";
         m = re.match(regex, str(pin.data))
@@ -45,6 +46,19 @@ class RegistrationForm(FlaskForm):
             raise ValidationError('Invalid pincode')
         else:
             return True
+        
+    def validate_password(self,password):
+        if len(password.data) < 8:
+            raise ValidationError('minimum length is 8 characters')
+        if not any(char.isupper() for char in password.data):
+            raise ValidationError('atleast one upper case character is required')
+        if not any(char.islower() for char in password.data):
+            raise ValidationError('atleast one lower case character is required')
+        if not any(char.isdigit() for char in password.data):
+            raise ValidationError('atleast one digit is required')
+        if all(char not in string.punctuation for char in password.data):
+            raise ValidationError('atleast one symbol is required')
+        return True
 # This form takes the email and password of a user or volunteer to get authenticated
 class LoginForm(FlaskForm):
     number = StringField("number", validators=[DataRequired()])

@@ -32,7 +32,7 @@ def home():
 def about():
     return render_template("about.html", title="About")
 
-# Route to registraion of a user or volunteer
+# Route to registration of a user or volunteer
 @app.route("/register/<role>", methods=["GET", "POST"])
 def register(role):
     if current_user.is_authenticated:

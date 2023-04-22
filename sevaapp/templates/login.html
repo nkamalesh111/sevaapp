@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
+<form action="action_page.php" style="border:1px solid #ccc"></form>
     <div class="content-section">
         <form method="POST" action="">
             {{ form.hidden_tag() }}
@@ -37,4 +38,7 @@
             </div>
         </form>
     </div>
+</form>
+
+
 {% endblock content %}
