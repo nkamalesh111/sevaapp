@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block content %}
+<h1>Welcome to My Flask App</h1>
+<p>Click the button below to delete your account:</p>
+<button onclick="confirmDelete()">Delete Account</button>
+<script>
+  function confirmDelete() {
+    if (confirm("Are you sure you want to delete your account? This cannot be undone.")) {
+      fetch('/delete-account', { method: 'POST' })
+        .then(response => response.redirected ? window.location.replace(response.url) : null)
+        .catch(error => console.error(error));
+    }
+  }
+</script>
+ 
+{% endblock content %} 

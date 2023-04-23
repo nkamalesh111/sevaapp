@@ -81,13 +81,16 @@ def login(role):
     return render_template("login.html", title=f"{role} Login", form=form)
 
 #to delete account
-@app.route("/del")
+@app.route("/delete", methods=['GET', 'POST'])
 @login_required
 def delete():
+    if request.method != 'POST':
+        return render_template('delete_account.html')
     User.query.filter_by(id=current_user.id).delete()
     db.session.commit()
-    flash("account deleted successfully","success")
-    return redirect(url_for("home"))
+    flash("Account deleted successfully 👍","success")
+    return redirect(url_for('home'))
+    
 
 # Logout from the user or volunteer account
 @app.route("/logout")
@@ -225,31 +228,34 @@ def ack(usr_id,v_id):
 @app.route("/monitor", methods=["GET", "POST"])
 @login_required
 def monitor():
-    user_name = User.query.filter_by(role='User').all()
-    namelst = [(i.id,i.username) for i in user_name]
-    
-    form = MonitoringForm()
-    form.userid.choices = namelst
-    if form.validate_on_submit():
+    if current_user.role=='Volunteer':
+        user_name = User.query.filter_by(role='User').all()
+        namelst = [(i.id,i.username) for i in user_name]
         
-        if user := User.query.filter_by(id=form.userid.data,role='User').first():
-            if user.date is None:
-                user.counter = 0
-                user.startdate = str(form.startdate.data)
-                user.date = user.startdate
-                user.enddate = str(form.enddate.data)
-                db.session.commit()
-                flash(
-                    f'Monitoring is applied successfully for {user.username}', 'success')
+        form = MonitoringForm()
+        form.userid.choices = namelst
+        if form.validate_on_submit():
+            
+            if user := User.query.filter_by(id=form.userid.data,role='User').first():
+                if user.date is None:
+                    user.counter = 0
+                    user.startdate = str(form.startdate.data)
+                    user.date = user.startdate
+                    user.enddate = str(form.enddate.data)
+                    db.session.commit()
+                    flash(
+                        f'Monitoring is applied successfully for {user.username}', 'success')
+                else:
+                    flash(f'Patient: {user.username} is already been monitored', 'warning')
+                patient_status()
+                return redirect(url_for('home'))
             else:
-                flash(f'Patient: {user.username} is already been monitored', 'warning')
+                flash('Check patient username', 'danger')
             patient_status()
-            return redirect(url_for('home'))
-        else:
-            flash('Check patient username', 'danger')
         patient_status()
-    patient_status()
-    return render_template('monitoring.html', title='Monitoring', form=form )
+        return render_template('monitoring.html', title='Monitoring', form=form )
+    flash('You can\'t access this page','danger')
+    return redirect(url_for('home'))
 
 # It will alert the user if user has not submitted the form for 3 or more days
 def patient_status():
@@ -267,21 +273,25 @@ def patient_status():
     return redirect(url_for('home'))
 
 @app.route('/deletemon', methods=["GET", "POST"])
+@login_required
 def deletemon():
-    user_name = User.query.filter(User.date !=None, User.role=='User').all()
-    namelst = [(i.id,i.username) for i in user_name]
-    form = DeleteForm()
-    form.userid.choices = namelst
-    if form.validate_on_submit():
-        
-        if user := User.query.filter_by(id=form.userid.data,role='User').first():
-            user.counter = 0
-            user.startdate,user.enddate = None,None
-            user.date = user.startdate
-            db.session.commit()
-            flash(f'Monitoring deletion is done successfully for {user.username}', 'success')
-            return redirect(url_for('home'))
-    return render_template('deletemon.html', title='Delete', form=form )
+    if current_user.role=='Volunteer':
+        user_name = User.query.filter(User.date !=None, User.role=='User').all()
+        namelst = [(i.id,i.username) for i in user_name]
+        form = DeleteForm()
+        form.userid.choices = namelst
+        if form.validate_on_submit():
+            
+            if user := User.query.filter_by(id=form.userid.data,role='User').first():
+                user.counter = 0
+                user.startdate,user.enddate = None,None
+                user.date = user.startdate
+                db.session.commit()
+                flash(f'Monitoring deletion is done successfully for {user.username}', 'success')
+                return redirect(url_for('home'))
+        return render_template('deletemon.html', title='Delete', form=form )
+    flash('You can\'t access this page', 'danger')
+    return redirect(url_for('home'))
     
     
 # This function will store the user's choice, whether he has taken medicine or not for the given day only. 
@@ -290,7 +300,6 @@ def deletemon():
 def med_taken():
     user = User.query.filter_by(id=current_user.id, role="User").first()
     today = str(datetime.now().date())
-    print(user.date)
     if user.date is not None and (today >= user.startdate and today <= user.enddate):
         if user.date <= today:# to check that patient should not enter twice the form for the same date
             form = MedicineTakenForm()
