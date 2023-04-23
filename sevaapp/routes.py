@@ -138,7 +138,7 @@ def update_account(role):
 
 @socketio.on("logged_in")
 def handle_logged_in_event(data):
-    if data["url"] != url_for("help"):
+    if (data["url"] != url_for("help")) or (len(Notification.query.filter_by(user_id=data["id"],action="no").all()))>1:
         return
     d[data["id"]]=[0,[]]
     @copy_current_request_context
@@ -168,12 +168,11 @@ def handle_notify_event(data):
 @app.route("/help")
 @login_required
 def help():
-    n = Notification(
-        user_id=current_user.id,
-        action="no",
-    )
-    db.session.add(n)
-    db.session.commit()
+    n = Notification.query.filter_by(user_id=current_user.id,action="no").first()
+    if n is None:
+        n = Notification(user_id=current_user.id,action="no")
+        db.session.add(n)
+        db.session.commit()
     return render_template("home.html", title="home")
 
 
@@ -185,7 +184,9 @@ def notifications(title):
         .order_by(Notification.id.desc()).with_entities(Notification.id,Notification.user_id)
         .all()
     )
-    u = User.query.filter(User.id.in_([i.user_id for i in n])).with_entities(User.firstname,User.lastname).all()
+    tmp=[i.user_id for i in n]
+    # tmp=list(dict.fromkeys(tmp))
+    u = User.query.filter(User.id.in_(tmp)).with_entities(User.firstname,User.lastname).all()
     return render_template("display.html", n=n, u=u, title=title)
 
 

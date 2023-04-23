@@ -10,4 +10,4 @@ python-dateutil
 phonenumbers
 gevent
 gevent-websocket
-Password-Validation
+flask_bootstrap
