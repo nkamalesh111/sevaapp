@@ -124,7 +124,7 @@
               >
               {% endif %}
               <script>
-                const socket = io.connect("http://10.110.30.109:5000");
+                const socket = io.connect("http://10.110.30.104:5000");
                 if ("{{current_user.role}}" == "User") {
                   socket.on("connect", function () {
                     socket.emit("logged_in", {
