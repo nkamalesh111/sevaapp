@@ -4,7 +4,7 @@
 <h1>Phone Number-{{usr.number}}</h1>
 <h1>Address-{{usr.address}}</h1>
 {% if text=='accept' %}
-<a class="nav-item nav-link" href="{{url_for('ack',usr_id=usr.id,v_id=id)}}">accept </a>
+<a class="btn btn-outline-info" href="{{url_for('ack',usr_id=usr.id,v_id=id)}}">Accept </a>
 {% else %}
 <p>{{text}}</p>
 {% endif %}

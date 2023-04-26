@@ -16,7 +16,8 @@ import time, gevent
 ####################################################################
 d={}
 ####################################################################
-# Creates a table in databease
+# Creates a table in database
+
 @app.before_first_request
 def create_tables():
     db.create_all()
@@ -212,13 +213,13 @@ def ack(usr_id,v_id):
         return render_template(
             "user_details.html",
             usr=User.query.filter_by(id=usr_id).first(),
-            text=f"accepted by volunteer {current_user.firstname} {current_user.lastname}",
+            text=f"Accepted by volunteer {current_user.firstname} {current_user.lastname}",
         )
     v=User.query.filter_by(id=n.volunteer_id).first()
     return render_template(
         "user_details.html",
         usr=User.query.filter_by(id=usr_id).first(),
-        text=f"already accepted by volunteer {v.firstname} {v.lastname}",
+        text=f"already Accepted by volunteer {v.firstname} {v.lastname}",
     )
 
 # FOR ADHERENCE MONITORING
