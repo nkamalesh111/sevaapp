@@ -15,7 +15,7 @@ import time, gevent
 # FOR SIGN IN AND SIGN UP
 ####################################################################
 d={}
-
+####################################################################
 # Creates a table in databease
 @app.before_first_request
 def create_tables():
@@ -108,8 +108,6 @@ def account():
 @app.route("/update_account/<role>", methods=["GET", "POST"])
 @login_required
 def update_account(role):
-    # if current_user.is_authenticated:
-    #     return redirect(url_for("home"))
     tmp=User.query.filter_by(id=current_user.id).first()
     form = RegistrationForm()
     form.role.data = role
@@ -138,7 +136,7 @@ def update_account(role):
 
 @socketio.on("logged_in")
 def handle_logged_in_event(data):
-    if (data["url"] != url_for("help")) or (len(Notification.query.filter_by(user_id=data["id"],action="no").all()))>1:
+    if (data["url"] != url_for("help")) or (data["id"] in d and d[data["id"]][0]==0):
         return
     d[data["id"]]=[0,[]]
     @copy_current_request_context
@@ -206,11 +204,11 @@ def ack(usr_id,v_id):
         user_id=usr_id,id=v_id
     ).first()
     if n.action == "no":
-        d[usr_id][0]=1
         n.action = "yes"
         n.volunteer_id = current_user.id
         n.pincode = current_user.pincode
         db.session.commit()
+        d[usr_id][0]=1
         return render_template(
             "user_details.html",
             usr=User.query.filter_by(id=usr_id).first(),

@@ -1,4 +1,4 @@
-#!/home/debasis/Desktop/sem2/mp/sevaapp/venv/bin/python3
+#!/home/kamalesh/flask/sevaapp/venv/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys
