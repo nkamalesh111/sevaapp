@@ -72,8 +72,8 @@ class LoginForm(FlaskForm):
 # add user to the monitoring 
 class MonitoringForm(FlaskForm):
     userid = SelectField('Patient name', validators=[DataRequired()] , coerce=int)
-    startdate = DateField('start date',format='%Y-%m-%d',validators=[DataRequired()])
-    enddate = DateField('end date',format='%Y-%m-%d',validators=[DataRequired()])
+    startdate = DateField('start date',format='%d-%m-%Y',validators=[DataRequired()])
+    enddate = DateField('end date',format='%d-%m-%Y',validators=[DataRequired()])
     submit = SubmitField("Submit")
 
 # This form stores the data if user had taken medicine for the day or not 
