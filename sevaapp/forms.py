@@ -61,7 +61,7 @@ class RegistrationForm(FlaskForm):
         return True
 # This form takes the email and password of a user or volunteer to get authenticated
 class LoginForm(FlaskForm):
-    number = StringField("number", validators=[DataRequired()])
+    number = StringField("Number", validators=[DataRequired()])
     password = PasswordField("Password", validators=[DataRequired()])
     remember = BooleanField("Remember Me")
     role = StringField("Role")
