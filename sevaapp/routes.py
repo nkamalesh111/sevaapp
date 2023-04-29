@@ -236,21 +236,18 @@ def monitor():
         if form.validate_on_submit():
             
             if user := User.query.filter_by(id=form.userid.data,role='User').first():
-                if user.date is None:
-                    user.counter = 0
-                    user.startdate = str(form.startdate.data)
-                    user.date = user.startdate
-                    user.enddate = str(form.enddate.data)
-                    db.session.commit()
-                    flash(
-                        f'Monitoring is applied successfully for {user.username}', 'success')
-                else:
-                    flash(f'Patient: {user.username} is already been monitored', 'warning')
+                user.counter = 0
+                user.startdate = str(form.startdate.data)
+                user.date = user.startdate
+                user.enddate = str(form.enddate.data)
+                db.session.commit()
+                flash(
+                    f'Monitoring is applied successfully for {user.username}', 'success')
                 patient_status()
                 return redirect(url_for('home'))
             else:
                 flash('Check patient username', 'danger')
-            patient_status()
+                patient_status()
         patient_status()
         return render_template('monitoring.html', title='Monitoring', form=form )
     flash('You can\'t access this page','danger')
