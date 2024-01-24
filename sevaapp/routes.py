@@ -243,11 +243,10 @@ def monitor():
                 db.session.commit()
                 flash(
                     f'Monitoring is applied successfully for {user.username}', 'success')
-                patient_status()
                 return redirect(url_for('home'))
             else:
                 flash('Check patient username', 'danger')
-                patient_status()
+            patient_status()
         patient_status()
         return render_template('monitoring.html', title='Monitoring', form=form )
     flash('You can\'t access this page','danger')

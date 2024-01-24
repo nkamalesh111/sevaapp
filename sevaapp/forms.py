@@ -1,10 +1,11 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, RadioField, SelectField, DateField
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, RadioField, SelectField, IntegerField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, RadioField, SelectField, DateField, IntegerField
 from wtforms.validators import DataRequired,  EqualTo, ValidationError
 from sevaapp.models import User
 import phonenumbers, string
 import re
+from datetime import date
+from flask import flash
 
 
 # This form stores the user or volunteer information which will be useful further
@@ -72,9 +73,17 @@ class LoginForm(FlaskForm):
 # add user to the monitoring 
 class MonitoringForm(FlaskForm):
     userid = SelectField('Patient name', validators=[DataRequired()] , coerce=int)
-    startdate = DateField('start date',format='%d-%m-%Y',validators=[DataRequired()])
-    enddate = DateField('end date',format='%d-%m-%Y',validators=[DataRequired()])
+    startdate = DateField('start date',format='%Y-%m-%d',validators=[DataRequired()])
+    enddate = DateField('end date',format='%Y-%m-%d',validators=[DataRequired()])
     submit = SubmitField("Submit")
+    
+    def validate_startdate(self,startdate):
+        today = date.today()
+        if (startdate.data - today).days < 0:
+            raise ValidationError("please enter today's date or future dates")
+    def validate_enddate(self,enddate):
+        if (self.startdate.data - enddate.data).days > 0:
+            raise ValidationError("please enter valid date which ids greater than start date")
 
 # This form stores the data if user had taken medicine for the day or not 
 class MedicineTakenForm(FlaskForm):
